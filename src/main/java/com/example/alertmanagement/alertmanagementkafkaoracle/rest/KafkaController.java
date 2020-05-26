@@ -23,7 +23,7 @@ public class KafkaController {
 	private String TOPIC = "alert-data-feed";
 	
 	@ResponseBody
-	@PostMapping(value = "/postAlert", consumes = {"application/json"}, produces = {"application/json"})
+	@PostMapping(value = "/postalert", consumes = {"application/json"}, produces = {"application/json"})
 	public ResponseMessage postAlert(@RequestBody AlertMessage alertMessage){
 		ResponseMessage responseMessage = new ResponseMessage();
 		ListenableFuture<SendResult<String, AlertMessage>> listenableFuture = kafkaJsonTemplate.send(TOPIC, alertMessage);
@@ -49,7 +49,7 @@ public class KafkaController {
 	}
 	
 	@ResponseBody
-	@GetMapping(value = "/infoService", consumes = {"application/json"}, produces = {"application/json"})
+	@GetMapping(value = "/infoservice", produces = {"application/json"})
 	public ResponseMessage infoService()
 	{
 		ResponseMessage responseMessage = new ResponseMessage();
