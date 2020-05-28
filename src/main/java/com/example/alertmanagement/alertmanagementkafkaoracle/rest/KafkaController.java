@@ -34,10 +34,10 @@ public class KafkaController {
 		ResponseMessage responseMessage = new ResponseMessage();
 		try
 		{
-			SendResult<String,AlertMessage> sendResult = kafkaJsonTemplate.send(TOPIC, alertMessage).get(10, TimeUnit.SECONDS);
+			SendResult<String,AlertMessage> sendResult = kafkaJsonTemplate.send(TOPIC, alertMessage).get(5, TimeUnit.SECONDS);
 			responseMessage.setErrorCode("0000-postalert");
 			responseMessage.setErrorMessage("Message post to kafka topic - "+TOPIC+" success");
-			MessageDetails messageDetails = new MessageDetails(sendResult.getProducerRecord().value().getMessageDetails().getMessageCode(), sendResult.getProducerRecord().value().getMessageDetails().getMessageCode());
+			MessageDetails messageDetails = new MessageDetails(sendResult.getProducerRecord().value().getMessageDetails().getMessageCode(), sendResult.getProducerRecord().value().getMessageDetails().getMessage());
 			messageDetails.setMessageId(sendResult.getProducerRecord().value().getMessageDetails().getMessageId());
 			messageDetails.setMessageOffset(Long.toString(sendResult.getRecordMetadata().offset()));
 			responseMessage.setMessageDetails(messageDetails);
