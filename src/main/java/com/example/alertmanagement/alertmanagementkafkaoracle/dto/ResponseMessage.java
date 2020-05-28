@@ -8,21 +8,16 @@ public class ResponseMessage implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private String errorCode;
-	private String errorMessage;
-	private String messageOffset;
-	private String messageId;
+	private String errorCode = "";
+	private String errorMessage = "";
+	private MessageDetails messageDetails;
 	
-	public String getMessageId() {
-		return messageId;
+	public MessageDetails getMessageDetails() {
+		return messageDetails;
 	}
 
-	public void setMessageId(String messageId) {
-		this.messageId = messageId;
-	}
-
-	public String getMessageOffset() {
-		return messageOffset;
+	public void setMessageDetails(MessageDetails messageDetails) {
+		this.messageDetails = messageDetails;
 	}
 
 	public String getErrorCode() {
@@ -42,10 +37,6 @@ public class ResponseMessage implements Serializable{
 
 	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
-	}
-
-	public void setMessageOffset(String messageOffset) {
-		this.messageOffset = messageOffset;
 	}
 
 }

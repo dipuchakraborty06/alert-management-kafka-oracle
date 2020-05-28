@@ -8,13 +8,13 @@ public class LocationDetails implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private String region;
-	private String country;
-	private String state;
-	private String county;
-	private String area;
-	private String address;
-	private String zipCode;
+	private String region = "";
+	private String country = "";
+	private String state = "";
+	private String county = "";
+	private String area = "";
+	private String address = "";
+	private String zipCode = "";
 	
 	public String getRegion() {
 		return region;

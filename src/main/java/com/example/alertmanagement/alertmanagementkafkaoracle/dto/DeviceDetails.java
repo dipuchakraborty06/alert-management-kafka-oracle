@@ -8,11 +8,11 @@ public class DeviceDetails implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private String deviceId;
-	private String deviceName;
-	private String deviceInterface;
-	private String deviceLocatorLatitude;
-	private String deviceLocatorLongitude;
+	private String deviceId = "";
+	private String deviceName = "";
+	private String deviceInterface = "";
+	private String deviceLocatorLatitude = "";
+	private String deviceLocatorLongitude = "";
 	
 	public String getDeviceId() {
 		return deviceId;
