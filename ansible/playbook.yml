@@ -1,0 +1,13 @@
+---
+- hosts: localhost
+  connection: local
+  become: true
+  tasks:
+  - name: Remove current docker image
+    command: docker rmi alert-management-kafka-oracle
+    ignore_errors: true
+    
+  - name: Build docker image
+    command: docker build -t alert-management-kafka-oracle .
+    args:
+      chdir: ../docker
