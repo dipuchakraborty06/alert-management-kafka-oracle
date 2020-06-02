@@ -1,0 +1,23 @@
+{
+  "locationDetails":
+  {
+    "region": "us-east1",
+    "country": "USA",
+    "state": "Tennecy",
+    "county": "Orange",
+    "area": "Test Area",
+    "address": "Test Address",
+    "zipcode": "100056"
+  },
+  "deviceDetails":
+  {
+    "deviceId": "Test Device 1",
+    "deviceName": "Test Device 1",
+    "deviceInterface": "Raspberry Pi"
+  },
+  "messageDetails":
+  {
+    "messageCode": "Test message code 1",
+    "messge": "Test Alert message"
+  }
+}
