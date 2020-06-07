@@ -1,0 +1,17 @@
+---
+- hosts: buildserver
+  connection: local
+  become: false
+  tasks:    
+  - name: Remove current docker image
+    command: docker rmi alert-management-kafka-oracle
+    ignore_errors: true
+    
+  - name: Build docker image
+    command: docker build -t alert-management-kafka-oracle .
+    
+  - name: Tag docker image for push to docker repository
+    command: docker tag alert-management-kafka-oracle:latest dipuchakraborty06/repository:alert-management-kafka-oracle
+    
+  - name: Push docker image to docker repository
+    command: docker push dipuchakraborty06/repository:alert-management-kafka-oracle
