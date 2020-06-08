@@ -13,19 +13,13 @@ apt-get install -y openjdk-8-jdk docker.io ansible
 echo "#################### Installed Java version ###########################"
 java -version
 echo "################### Installed Docker version ##########################"
-docker -version
+docker version
 usermod -aG docker ubuntu
 systemctl start docker
 systemctl enable docker
-echo "############# Installing Jenkins for build automation #################"
-wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -
-sh -c 'echo deb http://pkg.jenkins-ci.org/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
-apt-get update
-apt install -y jenkins
-systemctl start jenkins
-systemctl enable jenkins
-ufw allow 8080
-ufw status
-echo "#######################################################################"
-
-export INSTANCE_IP=`curl -s http://169.254.169.254/latest/meta-data/local-ipv4`
+echo "################## Installed Ansible version ##########################"
+ansible --version
+echo "################ Setting IPs as variable ##############################"
+export INSTANCE_PRIVATE_IP=`curl -s http://169.254.169.254/latest/meta-data/local-ipv4`
+export INSTANCE_PUBLIC_IP=`curl -s http://169.254.169.254/latest/meta-data/public-ipv4`
+echo "Private IP - $INSTANCE_PRIVATE_IP and Public IP - $INSTANCE_PUBLIC_IP"

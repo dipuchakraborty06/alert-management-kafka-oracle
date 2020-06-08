@@ -1,7 +1,5 @@
 provider "aws" {
 	region = var.region
-	access_key = "AKIAYITAMZV4VKAUGVEU"
-	secret_key = "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"
 }
 
 ######################## Create VPC ###############################
@@ -204,6 +202,13 @@ resource "aws_security_group" "alert-management-kafka-oracle-webserver-securityg
   }
 }
 #################### Create Bastion instance ##########################
+resource "aws_placement_group" "alert-management-kafka-oracle-placement-group" {
+	name = "alert-management-kafka-oracle-placement-group"
+	strategy = "partition"
+	tags = {
+		Name = "alert-management-kafka-oracle-placement-group"
+	}
+}
 resource "aws_instance" "alert-management-kafka-oracle-bastion-instance" {
 	ami = var.ami
 	availability_zone = "${var.region}a"
@@ -214,6 +219,7 @@ resource "aws_instance" "alert-management-kafka-oracle-bastion-instance" {
 	instance_type = var.instance_type
 	iam_instance_profile = var.iam_bastion_role
 	key_name = var.key_pair
+	placement_group = aws_placement_group.alert-management-kafka-oracle-placement-group.id
 	security_groups = [aws_security_group.alert-management-kafka-oracle-bastion-securitygroup.id]
 	subnet_id = aws_subnet.alert-management-kafka-oracle-subnet1.id
 	tags = {
