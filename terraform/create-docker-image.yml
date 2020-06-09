@@ -2,7 +2,7 @@
 - hosts: buildserver
   connection: local
   become: false
-  tasks:    
+  tasks: 
   - name: Remove current docker image
     command: docker rmi alert-management-kafka-oracle
     ignore_errors: true

@@ -23,3 +23,5 @@ echo "################ Setting IPs as variable ##############################"
 export INSTANCE_PRIVATE_IP=`curl -s http://169.254.169.254/latest/meta-data/local-ipv4`
 export INSTANCE_PUBLIC_IP=`curl -s http://169.254.169.254/latest/meta-data/public-ipv4`
 echo "Private IP - $INSTANCE_PRIVATE_IP and Public IP - $INSTANCE_PUBLIC_IP"
+
+echo "################ Downloading kafka and setting up the configuration #####################"
