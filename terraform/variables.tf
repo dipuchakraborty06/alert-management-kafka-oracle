@@ -26,3 +26,7 @@ variable "iam_bastion_role" {
 	type = string
 	default = "alert-management-kafka-oracle-bastion-instance-role"
 }
+variable "iam_kafka_role" {
+	type = string
+	default = "alert-management-kafka-oracle-kafka-instance-role"
+}

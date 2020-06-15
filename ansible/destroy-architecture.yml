@@ -1,0 +1,20 @@
+---
+- hosts: buildserver
+  connection: local
+  become: true
+  tasks: 
+  - name: Initialize terraform
+    shell: terraform init
+    environment:
+      AWS_ACCESS_KEY_ID: "{{ accessKeyId }}"
+      AWS_SECRET_ACCESS_KEY: "{{ secretAccessKey }}"
+    args:
+      chdir: "{{ playbook_dir }}/../terraform"
+   
+  - name: Destroy terraform model
+    shell: terraform destroy -auto-approve
+    environment:
+      AWS_ACCESS_KEY_ID: "{{ accessKeyId }}"
+      AWS_SECRET_ACCESS_KEY: "{{ secretAccessKey }}"
+    args:
+      chdir: "{{ playbook_dir }}/../terraform"

@@ -1,0 +1,34 @@
+---
+- hosts: buildserver
+  connection: local
+  become: true
+  tasks:  
+  - name: Initialize terraform
+    shell: terraform init
+    environment:
+      AWS_ACCESS_KEY_ID: "{{ accessKeyId }}"
+      AWS_SECRET_ACCESS_KEY: "{{ secretAccessKey }}"
+    args:
+      chdir: "{{ playbook_dir }}/../terraform"
+      
+  - name: Plan terraform model
+    shell: terraform plan
+    environment:
+      AWS_ACCESS_KEY_ID: "{{ accessKeyId }}"
+      AWS_SECRET_ACCESS_KEY: "{{ secretAccessKey }}"
+    args:
+      chdir: "{{ playbook_dir }}/../terraform"
+      
+  - name: Apply terraform model
+    shell: terraform apply -auto-approve
+    environment:
+      AWS_ACCESS_KEY_ID: "{{ accessKeyId }}"
+      AWS_SECRET_ACCESS_KEY: "{{ secretAccessKey }}"
+    args:
+      chdir: "{{ playbook_dir }}/../terraform"
+      
+  - name: Delete AMI created from Bastion instance
+    shell: terraform destroy -target aws_ami_from_instance.alert-management-kafka-oracle-ami -auto-approve
+    environment:
+      AWS_ACCESS_KEY_ID: "{{ accessKeyId }}"
+      AWS_SECRET_ACCESS_KEY: "{{ secretAccessKey }}"

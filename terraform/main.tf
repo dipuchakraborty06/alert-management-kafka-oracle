@@ -16,6 +16,7 @@ resource "aws_internet_gateway" "alert-management-kafka-oracle-igw" {
 	tags = {
 		Name = "alert-management-kafka-oracle-igw"
 	}
+	depends_on = [aws_vpc.alert-management-kafka-oracle-vpc]
 }
 ################### Create main route table for VPC ##############
 resource "aws_route_table" "alert-management-kafka-oracle-routetable" {
@@ -27,6 +28,7 @@ resource "aws_route_table" "alert-management-kafka-oracle-routetable" {
 	tags = {
 		Name = "alert-management-kafka-oracle-routetable"
 	}
+	depends_on = [aws_vpc.alert-management-kafka-oracle-vpc]
 }
 ##################### Create subnet in 3 availibility zones ################
 resource "aws_subnet" "alert-management-kafka-oracle-subnet1" {
@@ -36,6 +38,7 @@ resource "aws_subnet" "alert-management-kafka-oracle-subnet1" {
 	tags = {
 		Name = "alert-management-kafka-oracle-subnet1"
 	}
+	depends_on = [aws_route_table.alert-management-kafka-oracle-routetable]
 }
 resource "aws_subnet" "alert-management-kafka-oracle-subnet2" {
 	availability_zone = "${var.region}b"
@@ -44,6 +47,7 @@ resource "aws_subnet" "alert-management-kafka-oracle-subnet2" {
 	tags = {
 		Name = "alert-management-kafka-oracle-subnet2"
 	}
+	depends_on = [aws_route_table.alert-management-kafka-oracle-routetable]
 }
 resource "aws_subnet" "alert-management-kafka-oracle-subnet3" {
 	availability_zone = "${var.region}c"
@@ -52,191 +56,29 @@ resource "aws_subnet" "alert-management-kafka-oracle-subnet3" {
 	tags = {
 		Name = "alert-management-kafka-oracle-subnet3"
 	}
+	depends_on = [aws_route_table.alert-management-kafka-oracle-routetable]
 }
 ################### Create subnet association with main route table #######################
 resource "aws_route_table_association" "subnet1" {
   subnet_id      = aws_subnet.alert-management-kafka-oracle-subnet1.id
   route_table_id = aws_route_table.alert-management-kafka-oracle-routetable.id
+  depends_on = [aws_subnet.alert-management-kafka-oracle-subnet1]
 }
 resource "aws_route_table_association" "subnet2" {
   subnet_id      = aws_subnet.alert-management-kafka-oracle-subnet2.id
   route_table_id = aws_route_table.alert-management-kafka-oracle-routetable.id
+  depends_on = [aws_subnet.alert-management-kafka-oracle-subnet2]
 }
 resource "aws_route_table_association" "subnet3" {
   subnet_id      = aws_subnet.alert-management-kafka-oracle-subnet3.id
   route_table_id = aws_route_table.alert-management-kafka-oracle-routetable.id
+  depends_on = [aws_subnet.alert-management-kafka-oracle-subnet3]
 }
-################### Create security groups ##################################
-resource "aws_security_group" "alert-management-kafka-oracle-bastion-securitygroup" {
-	name = "alert-management-kafka-oracle-bastion-securitygroup"
-	description = "Security group for bastion instances"
-	vpc_id = aws_vpc.alert-management-kafka-oracle-vpc.id
-	ingress {
-		description = "SSH traffic from Internet"
-		from_port = 22
-		to_port = 22
-		protocol = "tcp"
-		cidr_blocks = ["0.0.0.0/0"]
-	}
-	ingress {
-		description = "HTTP traffic from Internet"
-		from_port = 8080
-		to_port = 8080
-		protocol = "tcp"
-		cidr_blocks = ["0.0.0.0/0"]
-	}
-	egress {
-		description = "Any outbound traffic"
-    	from_port   = 0
-    	to_port     = 0
-    	protocol    = "-1"
-    	cidr_blocks = ["0.0.0.0/0"]
-  	}
-
-  tags = {
-    Name = "alert-management-kafka-oracle-bastion-securitygroup"
-  }
-}
-resource "aws_security_group" "alert-management-kafka-oracle-elb-securitygroup" {
-	name = "alert-management-kafka-oracle-elb-securitygroup"
-	description = "Security group for load balancer"
-	vpc_id = aws_vpc.alert-management-kafka-oracle-vpc.id
-	ingress {
-		description = "HTTP traffic from Internet"
-		from_port = 80
-		to_port = 80
-		protocol = "tcp"
-		cidr_blocks = ["0.0.0.0/0"]
-	}
-	ingress {
-		description = "HTTP traffic from Internet"
-		from_port = 8080
-		to_port = 8080
-		protocol = "tcp"
-		cidr_blocks = ["0.0.0.0/0"]
-	}
-	egress {
-		description = "Any outbound traffic"
-    	from_port   = 0
-    	to_port     = 0
-    	protocol    = "-1"
-    	cidr_blocks = ["0.0.0.0/0"]
-  	}
-
-  tags = {
-    Name = "alert-management-kafka-oracle-elb-securitygroup"
-  }
-}
-resource "aws_security_group" "alert-management-kafka-oracle-kafka-securitygroup" {
-	name = "alert-management-kafka-oracle-kafka-securitygroup"
-	description = "Security group for Kafka cluster"
-	vpc_id = aws_vpc.alert-management-kafka-oracle-vpc.id
-	ingress {
-		description = "Zookeeper from VPC"
-		from_port = 2181
-		to_port = 2181
-		protocol = "tcp"
-		cidr_blocks = [aws_vpc.alert-management-kafka-oracle-vpc.cidr_block]
-	}
-	ingress {
-		description = "Bootstrap servers/listeners from VPC"
-		from_port = 9092
-		to_port = 9092
-		protocol = "tcp"
-		cidr_blocks = [aws_vpc.alert-management-kafka-oracle-vpc.cidr_block]
-	}
-	ingress {
-		description = "SSH from Bastion instances"
-		from_port = 22
-		to_port = 22
-		protocol = "tcp"
-		security_groups = [aws_security_group.alert-management-kafka-oracle-bastion-securitygroup.id]
-	}
-	egress {
-		description = "Any outbound traffic"
-    	from_port   = 0
-    	to_port     = 0
-    	protocol    = "-1"
-    	cidr_blocks = ["0.0.0.0/0"]
-  	}
-
-  tags = {
-    Name = "alert-management-kafka-oracle-kafka-securitygroup"
-  }
-}
-resource "aws_security_group" "alert-management-kafka-oracle-webserver-securitygroup" {
-	name = "alert-management-kafka-oracle-webserver-securitygroup"
-	description = "Security group for rest services cluster"
-	vpc_id = aws_vpc.alert-management-kafka-oracle-vpc.id
-	ingress {
-		description = "HTTP traffic from ELB security group"
-		from_port = 8080
-		to_port = 8080
-		protocol = "tcp"
-		security_groups = [aws_security_group.alert-management-kafka-oracle-elb-securitygroup.id]
-	}
-	ingress {
-		description = "HTTP traffic from ELB security group"
-		from_port = 80
-		to_port = 80
-		protocol = "tcp"
-		security_groups = [aws_security_group.alert-management-kafka-oracle-elb-securitygroup.id]
-	}
-	ingress {
-		description = "SSH from Bastion instances"
-		from_port = 22
-		to_port = 22
-		protocol = "tcp"
-		security_groups = [aws_security_group.alert-management-kafka-oracle-bastion-securitygroup.id]
-	}
-	egress {
-		description = "Any outbound traffic"
-    	from_port   = 0
-    	to_port     = 0
-    	protocol    = "-1"
-    	cidr_blocks = ["0.0.0.0/0"]
-  	}
-
-  tags = {
-    Name = "alert-management-kafka-oracle-webserver-securitygroup"
-  }
-}
-#################### Create Bastion instance ##########################
+#################### Create Kafka instances placement group ##########################
 resource "aws_placement_group" "alert-management-kafka-oracle-placement-group" {
 	name = "alert-management-kafka-oracle-placement-group"
 	strategy = "partition"
 	tags = {
 		Name = "alert-management-kafka-oracle-placement-group"
 	}
-}
-resource "aws_instance" "alert-management-kafka-oracle-bastion-instance" {
-	ami = var.ami
-	availability_zone = "${var.region}a"
-	associate_public_ip_address = true
-	disable_api_termination = false
-	hibernation = false
-	instance_initiated_shutdown_behavior = "stop"
-	instance_type = var.instance_type
-	iam_instance_profile = var.iam_bastion_role
-	key_name = var.key_pair
-	placement_group = aws_placement_group.alert-management-kafka-oracle-placement-group.id
-	security_groups = [aws_security_group.alert-management-kafka-oracle-bastion-securitygroup.id]
-	subnet_id = aws_subnet.alert-management-kafka-oracle-subnet1.id
-	tags = {
-		Name = "alert-management-kafka-oracle-bastion-instance"
-		Description = "Bastion instance"
-		Version = "1.0"
-	}
-	user_data = file("./bastion-userdata.sh")
-	connection {
-		user = "ubuntu"
-		private_key = file("./kafka-keypair.pem")
-		timeout = "10m"
-	}
-}
-output "bastion-instance-public-dns" {
-	value = aws_instance.alert-management-kafka-oracle-bastion-instance.public_dns
-}
-output "bastion-instance-public-ip" {
-	value = aws_instance.alert-management-kafka-oracle-bastion-instance.public_ip
 }
