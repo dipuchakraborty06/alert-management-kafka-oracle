@@ -25,7 +25,7 @@ resource "time_sleep" "wait_15_minutes" {
   	create_duration = "15m"
 }
 resource "aws_ami_from_instance" "alert-management-kafka-oracle-ami" {
-  name               = "alert-management-kafka-oracle-ami"
+  name = "alert-management-kafka-oracle-ami"
   source_instance_id = aws_instance.alert-management-kafka-oracle-bastion-instance.id
   snapshot_without_reboot = true
   depends_on = [time_sleep.wait_15_minutes]

@@ -30,3 +30,7 @@ variable "iam_kafka_role" {
 	type = string
 	default = "alert-management-kafka-oracle-kafka-instance-role"
 }
+variable "kafka-topic-name" {
+	type = string
+	default = "alert-data"
+}

@@ -92,3 +92,43 @@ resource "null_resource" "provision-kafka3" {
 		aws_elb.alert-management-kafka-oracle-kafka-elb
 	]
 }
+###################### Create Kafka topic #####################################################
+resource "time_sleep" "wait_1_minute" {
+	depends_on = [null_resource.provision-kafka1,null_resource.provision-kafka2,null_resource.provision-kafka3]
+  	create_duration = "1m"
+}
+resource "null_resource" "set-server-host-file" {
+	provisioner "remote-exec" {
+		connection {
+			host = aws_instance.alert-management-kafka-oracle-bastion-instance.public_ip
+			type = "ssh"
+			user = "ubuntu"
+			private_key = file("./kafka-keypair.pem")
+			timeout = "20m"
+		}
+	    inline = [
+	      "sudo echo \"kafka-server1	${aws_instance.alert-management-kafka-oracle-kafka-instance1.private_ip}\" >> /etc/hosts",
+	      "sudo echo \"kafka-server2	${aws_instance.alert-management-kafka-oracle-kafka-instance2.private_ip}\" >> /etc/hosts",
+	      "sudo echo \"kafka-server3	${aws_instance.alert-management-kafka-oracle-kafka-instance3.private_ip}\" >> /etc/hosts"
+	    ]
+  	}
+	depends_on = [time_sleep.wait_1_minute]
+}
+resource "null_resource" "create-topic-alert-data-feed" {
+	provisioner "remote-exec" {
+		connection {
+			host = aws_instance.alert-management-kafka-oracle-kafka-instance1.private_ip
+			bastion_host = aws_instance.alert-management-kafka-oracle-bastion-instance.public_ip
+			bastion_user = "ubuntu"
+			bastion_private_key = file("./kafka-keypair.pem")
+			type = "ssh"
+			user = "ubuntu"
+			private_key = file("./kafka-keypair.pem")
+			timeout = "20m"
+		}
+	    inline = [
+	      "sudo /opt/kafka/bin/kafka-topics.sh --create --bootstrap-server ${aws_instance.alert-management-kafka-oracle-kafka-instance1.private_ip}:9092 --replication-factor 3 --partitions 3 --topic ${var.kafka-topic-name}"
+	    ]
+  	}
+	depends_on = [time_sleep.wait_1_minute]
+}

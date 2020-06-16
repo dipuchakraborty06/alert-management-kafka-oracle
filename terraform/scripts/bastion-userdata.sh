@@ -18,6 +18,9 @@ docker version
 usermod -aG docker ubuntu
 systemctl start docker
 systemctl enable docker
+aws s3 get s3://dipuchakraborty06.alertmanagementkafkaoracle/docker_credential
+docker login --username dipuchakraborty06 --password-stdin < docker_credential
+rm docker_credential
 
 echo "################## Installed Ansible version ##########################"
 ansible --version
@@ -25,8 +28,7 @@ ansible --version
 echo "############# Installing Kafka and configuring the same ###############"
 mkdir /opt/kafka
 mkdir /opt/kafka/data
-mkdir /opt/kafka/zookeeper
-chmod -R +rwx /opt/kafka
+chown -R ubuntu:ubuntu /opt/kafka
 
 wget http://apachemirror.wuchna.com/kafka/2.5.0/kafka_2.12-2.5.0.tgz
 mv kafka_2.12-2.5.0.tgz /opt/kafka
@@ -36,7 +38,7 @@ aws s3 sync s3://dipuchakraborty06.alertmanagementkafkaoracle/ /opt/kafka/config
 sed -i "s/KAFKA_HEAP_OPTS=\"-Xmx512M -Xms512M\"/KAFKA_HEAP_OPTS=\"-Xmx256M -Xms256M -Djava.security.auth.login.config=\/opt\/kafka\/config\/zookeeper_jaas.conf\"/g" /opt/kafka/bin/zookeeper-server-start.sh
 sed -i "s/KAFKA_HEAP_OPTS=\"-Xmx1G -Xms1G\"/KAFKA_HEAP_OPTS=\"-Xmx256M -Xms256M -Djava.security.auth.login.config=\/opt\/kafka\/config\/server_jaas.conf\"/g" /opt/kafka/bin/kafka-server-start.sh
 
-sed -i "s/dataDir=\/tmp\/zookeeper/dataDir=\/opt\/kafka\/zookeeper/g" /opt/kafka/config/zookeeper.properties
+sed -i "s/dataDir=\/tmp\/zookeeper/dataDir=\/tmp\/zookeeper/g" /opt/kafka/config/zookeeper.properties
 echo "authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider" >> /opt/kafka/config/zookeeper.properties
 echo "requireClientAuthScheme=sasl" >> /opt/kafka/config/zookeeper.properties
 echo "jaasLoginRenew=3600000" >> /opt/kafka/config/zookeeper.properties

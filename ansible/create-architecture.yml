@@ -28,7 +28,7 @@
       chdir: "{{ playbook_dir }}/../terraform"
       
   - name: Delete AMI created from Bastion instance
-    shell: terraform destroy -target aws_ami_from_instance.alert-management-kafka-oracle-ami -auto-approve
+    shell: terraform destroy -target module.bastion-ami.aws_ami_from_instance.alert-management-kafka-oracle-ami -auto-approve
     environment:
       AWS_ACCESS_KEY_ID: "{{ accessKeyId }}"
       AWS_SECRET_ACCESS_KEY: "{{ secretAccessKey }}"
