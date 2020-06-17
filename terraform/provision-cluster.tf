@@ -11,6 +11,7 @@ resource "null_resource" "provision-bastion-zookeeper" {
 		}
 	    inline = [
 	      "sudo sed -i 's/zookeeper.connect=localhost:2181/zookeeper.connect=${aws_instance.alert-management-kafka-oracle-bastion-instance.private_ip}:2181/g' /opt/kafka/config/server.properties",
+	      "sudo sed -i 's/localhost/${aws_instance.alert-management-kafka-oracle-bastion-instance.private_ip}/g' /opt/kafka/config/server.properties",
 	      "sudo sed -i 's/bootstrap.servers=localhost:9092/bootstrap.servers=${aws_instance.alert-management-kafka-oracle-kafka-instance1.private_ip}:9092,${aws_instance.alert-management-kafka-oracle-kafka-instance2.private_ip}:9092,${aws_instance.alert-management-kafka-oracle-kafka-instance3.private_ip}:9092/g' /opt/kafka/config/producer.properties",
 	      "sudo sed -i 's/bootstrap.servers=localhost:9092/bootstrap.servers=${aws_instance.alert-management-kafka-oracle-kafka-instance1.private_ip}:9092,${aws_instance.alert-management-kafka-oracle-kafka-instance2.private_ip}:9092,${aws_instance.alert-management-kafka-oracle-kafka-instance3.private_ip}:9092/g' /opt/kafka/config/consumer.properties",
 		  "sudo systemctl start zookeeper",
@@ -117,7 +118,7 @@ resource "null_resource" "set-server-host-file" {
 			timeout = "20m"
 		}
 	    inline = [
-	      "sudo /opt/kafka/bin/kafka-topics.sh --create --bootstrap-server ${aws_instance.alert-management-kafka-oracle-kafka-instance1.private_ip}:9092,${aws_instance.alert-management-kafka-oracle-kafka-instance2.private_ip}:9092,${aws_instance.alert-management-kafka-oracle-kafka-instance3.private_ip}:9092 --replication-factor 3 --partitions 3 --topic ${var.kafka-topic-name}",
+	      "sudo /opt/kafka/bin/kafka-topics.sh --create --zookeeper ${aws_instance.alert-management-kafka-oracle-bastion-instance.private_ip}:2181 --replication-factor 3 --partitions 3 --topic ${var.kafka-topic-name}",
 	      "sudo echo \"kafka-server1	${aws_instance.alert-management-kafka-oracle-kafka-instance1.private_ip}\" >> /etc/hosts",
 	      "sudo echo \"kafka-server2	${aws_instance.alert-management-kafka-oracle-kafka-instance2.private_ip}\" >> /etc/hosts",
 	      "sudo echo \"kafka-server3	${aws_instance.alert-management-kafka-oracle-kafka-instance3.private_ip}\" >> /etc/hosts"
