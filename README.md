@@ -11,7 +11,7 @@ creating JWT based REST services with Lambda and API Gateway to expose the same 
 4. AWS API Gateway for Lambda REST service expose to internet
  
 # Kafka architecture layout -
-![Kafka Architecture]("https://github.com/dipuchakraborty06/alert-management-kafka-oracle/kafka-architecture.png")
+![Kafka Architecture](kafka-architecture.png?raw=true)
 
 # Steps for AWS based Kafka infrastructure layout using ansible and terraform - 
   --> Please edit terraform/variables.tf file to set desired region where the infrastructure will spin-up.
