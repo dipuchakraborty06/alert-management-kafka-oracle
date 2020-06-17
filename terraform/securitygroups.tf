@@ -10,8 +10,15 @@ resource "aws_security_group" "alert-management-kafka-oracle-bastion-securitygro
 		protocol = "tcp"
 		cidr_blocks = ["0.0.0.0/0"]
 	}
+	ingress {
+		description = "Any inbound traffic from VPC"
+		from_port = 0
+		to_port = 0
+		protocol = "-1"
+		cidr_blocks = [aws_vpc.alert-management-kafka-oracle-vpc.cidr_block]
+	}
 	egress {
-		description = "Any outbound traffic"
+		description = "Any outbound traffic to internet"
     	from_port   = 0
     	to_port     = 0
     	protocol    = "-1"
@@ -27,34 +34,20 @@ resource "aws_security_group" "alert-management-kafka-oracle-kafka-securitygroup
 	description = "Security group for Kafka cluster"
 	vpc_id = aws_vpc.alert-management-kafka-oracle-vpc.id
 	ingress {
-		description = "Zookeeper from VPC"
-		from_port = 2181
-		to_port = 2181
-		protocol = "tcp"
+		description = "Any inbound traffic from VPC"
+		from_port = 0
+		to_port = 0
+		protocol = "-1"
 		cidr_blocks = [aws_vpc.alert-management-kafka-oracle-vpc.cidr_block]
-	}
-	ingress {
-		description = "Bootstrap servers/listeners from VPC"
-		from_port = 9092
-		to_port = 9092
-		protocol = "tcp"
-		cidr_blocks = [aws_vpc.alert-management-kafka-oracle-vpc.cidr_block]
-	}
-	ingress {
-		description = "SSH from Bastion instances"
-		from_port = 22
-		to_port = 22
-		protocol = "tcp"
-		security_groups = [aws_security_group.alert-management-kafka-oracle-bastion-securitygroup.id]
 	}
 	egress {
-		description = "Any outbound traffic"
+		description = "Any outbound traffic to internet"
     	from_port   = 0
     	to_port     = 0
     	protocol    = "-1"
     	cidr_blocks = ["0.0.0.0/0"]
   	}
-	depends_on = [aws_vpc.alert-management-kafka-oracle-vpc]
+	depends_on = [aws_security_group.alert-management-kafka-oracle-bastion-securitygroup]
   	tags = {
     	Name = "alert-management-kafka-oracle-kafka-securitygroup"
   	}

@@ -8,14 +8,17 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import com.example.alertmanagement.alertmanagementkafkaoracle.dto.AlertMessage;
+import com.example.alertmanagement.alertmanagementkafkaoracle.rest.KafkaController;
 
 @Configuration
+@Import({ KafkaController.class })
 public class KafkaProducerConfig {
 	
 	@Value("${spring.kafka.bootstrap-servers}")
