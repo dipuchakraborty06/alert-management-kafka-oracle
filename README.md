@@ -15,8 +15,10 @@ creating JWT based REST services with Lambda and API Gateway to expose the same 
 
 # Steps for AWS based Kafka infrastructure layout using ansible and terraform - 
   --> Please edit terraform/variables.tf file to set desired region where the infrastructure will spin-up.
-      This file will also contains role names for Bastion instance and Kafka instances, Kafka topic to create etc. 
-  --> Please run the following command to create the Kafka infrastructure 
+      This file will also contains role names for Bastion instance and Kafka instances, Kafka topic to create etc.
+      
+  --> Please run the following command to create the Kafka infrastructure -
+  
       ansible-playbook -i ansible/hosts /ansible/create-architecture.yml -e "@terraform_credentials.json"
       
       The credential file terraform crredentials should have AWS user secret key id and secret access key in the following format - 
@@ -26,4 +28,5 @@ creating JWT based REST services with Lambda and API Gateway to expose the same 
       }
       
   --> Please run the following command to tear-down/destroy the Kafka infrastructure - 
+  
       ansible-playbook -i ansible/hosts ansible/destroy-architecture.yml -e "@terraform_credentials.json"  
